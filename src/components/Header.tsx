@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
-import { HelpCircle, BarChart2, Moon, Sun, RotateCcw } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { HelpCircle, BarChart2, Moon, Sun, RotateCcw, Calendar } from 'lucide-react';
 
 interface HeaderProps {
   onOpenHelp: () => void;
@@ -13,6 +13,15 @@ interface HeaderProps {
   setIsDailyMode: (daily: boolean) => void;
 }
 
+function formatKoreanDate(date: Date): string {
+  return date.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  });
+}
+
 export const Header: React.FC<HeaderProps> = ({
   onOpenHelp,
   onOpenStats,
@@ -22,6 +31,12 @@ export const Header: React.FC<HeaderProps> = ({
   isDailyMode,
   setIsDailyMode,
 }) => {
+  const [todayText, setTodayText] = useState<string>(() => formatKoreanDate(new Date()));
+
+  useEffect(() => {
+    setTodayText(formatKoreanDate(new Date()));
+  }, []);
+
   return (
     <header className="w-full max-w-xl mx-auto border-b border-zinc-200 dark:border-zinc-800 px-4 py-3 flex items-center justify-between">
       {/* 좌측 액션들: 도움말, 새 게임 */}
@@ -42,12 +57,19 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* 중앙 타이틀 및 모드 선택 */}
+      {/* 중앙 타이틀, 오늘 날짜 및 모드 선택 */}
       <div className="flex flex-col items-center">
         <h1 className="text-xl sm:text-2xl font-black tracking-wider text-zinc-900 dark:text-white flex items-center gap-1.5">
           <span className="text-emerald-600 dark:text-emerald-500">한글</span> WORDLE
         </h1>
-        <div className="flex items-center gap-1 mt-0.5">
+        <div
+          suppressHydrationWarning
+          className="flex items-center gap-1 text-xs font-medium text-zinc-500 dark:text-zinc-400 mt-0.5"
+        >
+          <Calendar className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-500" />
+          <span suppressHydrationWarning>{todayText}</span>
+        </div>
+        <div className="flex items-center gap-1 mt-1">
           <button
             onClick={() => setIsDailyMode(true)}
             className={`text-[11px] px-2 py-0.5 rounded-full font-bold transition-all ${
